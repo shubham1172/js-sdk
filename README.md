@@ -1,78 +1,83 @@
-# Dapr SDK for Javascript
+[![Discord](https://img.shields.io/discord/778680217417809931)]()
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/dapr/js-sdk/blob/master/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B162%2Fgithub.com%2Fdapr%2Fcomponents-contrib.svg?type=shield)](https://app.fossa.com/projects/custom%2B162%2Fgithub.com%2Fdapr%2Fcomponents-contrib?ref=badge_shield)
 
-This is the Dapr SDK for Javascript, based on the auto-generated proto client.<br>
+# Dapr Node.js SDKs
 
-For more info on Dapr and gRPC, visit [this link](https://github.com/dapr/docs/tree/master/howto/create-grpc-app).
+The official [Dapr](https://dapr.io) Node.js SDK that allows interfacing with the Dapr sidecar for easy application building.
 
-This repo generates following package:
-dapr.io
+## Introduction
 
-## Usage
-Dapr javascript sdk package can be installed as:
-```bash
-npm install dapr-client
+The Dapr JS SDK will allow you to interface with the Dapr process that abstracts several commonly used functionalities such as Service-to-Service invocation, State Management, PubSub, and more.
+
+![](./documentation/assets/dapr-architecture.png)
+
+Looking at the illustration above, we can see there will always always be another process (the Dapr Sidecar) running that your application will interface with. This process can either be started manually (e.g. through Dapr CLI) or injected as a container (e.g. through Kubernetes Sidecar injection in your pod).
+
+For your application to interface with this, 2 components should be taken into account:
+* **DaprServer:** Dapr Sidecar -> our Application - When we Subscribe to a Topic, Create an Actor, ... we receive an event from the Dapr process that abstracted its implementation. Our application should thus listen to this (which this SDK helps you with).
+* **DaprClient:** Your Application -> Dapr Sidecar - When we want to Publish an Event, Execute a Binding, ... we will talk with the Dapr process that calls its implementation for us so that we don't have to write it ourself!
+
+## Simple Example
+
+> [Full version](./examples/http/pubsub)
+
+As a simple example, consider the use case: "Creating a PubSub where we can publish a message on a Topic and also receive messages back from this topic". Normally for this use case we would have to look at the Broker that we want to utilize and implement their specificities. While as with Dapr we can use a simple SDK and configure the "component" that we want to interface with.
+
+> 🤩 This also means that if we want to switch from one broker to another (e.g. [Azure Service Bus](https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-azure-servicebus/) to [RabbitMQ](https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-rabbitmq/)) we just have to change the component implementation!
+
+**component.yaml**
+
+```yaml
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: my-pubsub-component
+  namespace: default
+spec:
+  type: pubsub.rabbitmq
+  version: v1
+  metadata:
+  - name: host
+    value: "amqp://localhost:5672"
 ```
 
-### Creating the client
-```js
-var dapr = require('dapr-client');
-var messages = dapr.dapr_pb; 
-var services = dapr.dapr_grpc;
-var grpc = require('grpc');
+**example.ts**
 
-const PORT = process.env.DAPR_GRPC_PORT || 50001;
-var client = new services.DaprClient(`localhost:${PORT}`, grpc.credentials.createInsecure());
+```javascript
+import { DaprClient, DaprServer } from "dapr-client";
+
+const daprHost = "127.0.0.1"; // Dapr Sidecar Host
+const daprPort = "50000"; // Dapr Sidecar Port
+const serverHost = "127.0.0.1"; // App Host of this Example Server
+const serverPort = "50001"; // App Port of this Example Server
+
+// Create a Server (will subscribe) and Client (will publish)
+const server = new DaprServer(serverHost, serverPort, daprHost, daprPort);
+const client = new DaprClient(daprHost, daprPort);
+
+// Initialize the server to subscribe (listen)
+await server.pubsub.subscribe("my-pubsub-component", "my-topic", async (data: any) => console.log(`Received: ${JSON.stringify(data)}`));
+await server.start();
+
+// Send a message
+await client.pubsub.publish("my-pubsub-component", "my-topic", { hello: "world" });
 ```
 
-For usage, refer to [examples/simple/app.js](https://github.com/dapr/js-sdk/blob/master/examples/simple/app.js)
-
-
-### Running the code locally.
-
-From the root directory:
-
-```bash
-cd src
-npm install
-```
-
-From the root directory:
-
-```bash
-cd examples/simple
-npm install
-```
-
-```bash
-dapr run --protocol grpc --grpc-port=50001 node app.js
-```
-
-### Generate gRPC interface and proto buf stubs
-
-1. Make the `protobuf.sh` executable
-```bash
-sudo chmod +x protobuf.sh
-```
-
-2. Run the `protobuf.sh` script
-```bash
-./protobuf.sh
-```
-
-### Use the package from local source
-From the root directory:
-
-```bash
-cd examples/simple
-npm install ../..
-```
-
-### Creating and publishing the package
-From the root directory:
+To start this we of course have to start the Dapr process with it. With the command below we can utilize the CLI to quickly test this:
 
 ```bash
-npm pack
-npm publish --access public
+dapr run --app-id example-http-pubsub --app-protocol http --app-port 50001 --dapr-http-port 50000 --components-path ./components npm run start
 ```
-*Note* --access public will publish the package publicly.
-For all publish options see https://docs.npmjs.com/cli/publish
+
+Which will result in the message:
+
+```bash
+Received: {"hello":"world"}
+```
+
+## Information & Links
+
+* [Reference](./documentation/reference.md) containing code snippets of how to use the different methods.
+* [Examples](./documentation/examples.md) containing examples you can use to build your application.
+* [Development](./documentation/development.md) containing pointers for getting started on how to contribute to the SDK.
