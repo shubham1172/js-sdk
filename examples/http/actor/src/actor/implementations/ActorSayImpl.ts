@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { AbstractActor } from "dapr-client";
+import { AbstractActor } from "@dapr/dapr";
 import ActorSayInterface from "../interfaces/ActorSayInterface";
 
 export default class ActorSayImpl extends AbstractActor implements ActorSayInterface {
@@ -19,7 +19,7 @@ export default class ActorSayImpl extends AbstractActor implements ActorSayInter
         return `Actor said: "${msg}"`;
     }
 
-    sayObject(msg: object): object {
-        return { said: msg };
-    }
+  sayObject(msg: object): object {
+    return { said: msg };
+  }
 }

@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { ActorId, ActorProxyBuilder, DaprServer, DaprClient } from "dapr-client";
+import { ActorId, ActorProxyBuilder, DaprServer, DaprClient } from "@dapr/dapr";
 import ActorCounterImpl from "./actor/implementations/ActorCounterImpl";
 import ActorReminderImpl from "./actor/implementations/ActorReminderImpl";
 import ActorSayImpl from "./actor/implementations/ActorSayImpl";

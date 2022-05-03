@@ -36,10 +36,8 @@ export default interface ParkingSensorInterface {
 ## Actor Implementation
 An actor implementation defines a class by extending the base type `AbstractActor` and implementing the actor interface (`ParkingSensorInterface` in this case). 
 
-The following code describes an actor implementation along with a few helper methods.
-
 ```ts
-import { AbstractActor } from "dapr-client";
+import { AbstractActor } from "@dapr/dapr";
 import ParkingSensorInterface from "./ParkingSensorInterface";
 
 export default class ParkingSensorImpl extends AbstractActor implements ParkingSensorInterface {
@@ -91,7 +89,7 @@ console.log(`Registered Actors: ${JSON.stringify(resRegisteredActors)}`);
 After Actors are registered, create a Proxy object that implements `ParkingSensorInterface` using the `ActorProxyBuilder`. You can invoke the actor methods by directly calling methods on the Proxy object. Internally, it translates to making a network call to the Actor API and fetches the result back.
 
 ```javascript
-import { DaprClient, ActorId } from "dapr-client";
+import { DaprClient, DaprServer } from "@dapr/dapr";
 import ParkingSensorImpl from "./ParkingSensorImpl";
 import ParkingSensorInterface from "./ParkingSensorInterface";
 
