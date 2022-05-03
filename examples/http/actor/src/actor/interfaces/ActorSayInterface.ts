@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export default interface DemoActorCounterInterface {
-    count(): Promise<void>;
-    countBy(amount: number): Promise<void>;
+export default interface ActorSayInterface {
+    sayString(msg: string): string;
+    sayObject(msg: object): object;
 }

@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-export default interface DemoActorTimerInterface {
-    init(): Promise<string>;
+export default interface ActorCounterInterface {
     count(): Promise<void>;
-    countBy(amount: number): Promise<void>;
+    countBy(amount: number, multiplier: number): Promise<void>;
+    getCounter(): Promise<number>;
 }

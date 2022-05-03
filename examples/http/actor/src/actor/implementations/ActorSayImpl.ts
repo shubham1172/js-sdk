@@ -12,15 +12,14 @@ limitations under the License.
 */
 
 import { AbstractActor } from "@dapr/dapr";
+import ActorSayInterface from "../interfaces/ActorSayInterface";
 
-export default class DemoActorReminderImpl extends AbstractActor {
-  counter = 0;
+export default class ActorSayImpl extends AbstractActor implements ActorSayInterface {
+    sayString(msg: string): string {
+        return `Actor said: "${msg}"`;
+    }
 
-  async count(): Promise<void> {
-    this.counter++;
-  }
-
-  async countBy(amount: number): Promise<void> {
-    this.counter += amount;
+  sayObject(msg: object): object {
+    return { said: msg };
   }
 }
