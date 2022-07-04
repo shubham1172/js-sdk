@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { LoggerService } from "../../../src";
 import { Logger } from "../../../src/logger/Logger"
 import { LogLevel } from "../../../src/types/logger/LogLevel"
+import { MockLoggerService } from "../utils"
 
 describe('Logger', () => {
     it('should not display logs below the set log level', () => {
@@ -36,30 +36,6 @@ describe('Logger', () => {
         expect(mockLoggerService.debugCounter).toBe(0+0+1)
     })
 })
-
-class MockLoggerService implements LoggerService {
-    public errorCounter = 0;
-    public warnCounter = 0;
-    public infoCounter = 0;
-    public verboseCounter = 0;
-    public debugCounter = 0;
-
-    error(_message: any, ..._optionalParams: any[]): void {
-        this.errorCounter++;
-    }
-    warn(_message: any, ..._optionalParams: any[]): void {
-        this.warnCounter++;
-    }
-    info(_message: any, ..._optionalParams: any[]): void {
-        this.infoCounter++;
-    }
-    verbose(_message: any, ..._optionalParams: any[]): void {
-        this.verboseCounter++;
-    }
-    debug(_message: any, ..._optionalParams: any[]): void {
-        this.debugCounter++
-    }
-}
 
 function callAllLogLevels(logger: Logger) {
     logger.error("message")

@@ -95,6 +95,8 @@ export default class DaprClient {
       throw new Error('DAPR_INCORRECT_SIDECAR_PORT');
     }
 
+    this.warnOnDeprecatedVersion();
+
     // Builder
     switch (communicationProtocol) {
       case CommunicationProtocolEnum.GRPC: {
@@ -205,4 +207,11 @@ export default class DaprClient {
   getIsInitialized(): boolean {
     return this.daprClient.getIsInitialized();
   }
+
+  warnOnDeprecatedVersion() {
+    if (process.env.npm_package_name === "dapr-client") {
+        this.logger.warn("dapr-client is deprecated. Please use @dapr/dapr instead. For more information, see https://github.com/dapr/js-sdk/issues/259.")
+    }
+  }
 }
+

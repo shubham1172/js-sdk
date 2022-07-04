@@ -11,7 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { DaprClient } from "../../../src";
+import { CommunicationProtocolEnum, DaprClient } from "../../../src";
+import { MockLoggerService } from "../utils";
 
 const host = "127.0.0.1";
 const port = "50001";
@@ -29,6 +30,14 @@ describe('DaprClient', () => {
     } catch (e) {
       const msg = (e as Error).message;
       expect(msg).toEqual("DAPR_INCORRECT_SIDECAR_PORT");
+    }
+  });
+
+  it('show log a warning on using dapr-client package', () => {
+    const logger = new MockLoggerService();
+    new DaprClient(host, port, CommunicationProtocolEnum.HTTP, {logger: {service: logger}})
+    if (process.env.npm_package_name == "dapr-client") {
+        expect(logger.warnCounter).toBeGreaterThanOrEqual(1);
     }
   });
 });

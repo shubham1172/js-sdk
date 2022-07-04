@@ -28,19 +28,19 @@ import GRPCClient from "./implementation/Client/GRPCClient/GRPCClient";
 import HTTPClient from "./implementation/Client/HTTPClient/HTTPClient";
 
 export {
-  DaprClient,
-  DaprServer,
-  GRPCClient,
-  HTTPClient,
-  HttpMethod,
   AbstractActor,
   ActorId,
   ActorProxyBuilder,
   CommunicationProtocolEnum,
-  Temporal,
+  ConsoleLoggerService,
+  DaprClient,
   DaprClientOptions,
+  DaprServer,
+  GRPCClient,
+  HTTPClient,
+  HttpMethod,
   LogLevel,
   LoggerOptions,
   LoggerService,
-  ConsoleLoggerService,
+  Temporal,
 }
